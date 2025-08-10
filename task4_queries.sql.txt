@@ -1,0 +1,95 @@
+-- Revenue_by_Category
+
+use demo;
+SELECT Category, SUM(Amount) AS revenue
+FROM  sales
+WHERE Status LIKE 'Shipped%'
+GROUP BY Category
+ORDER BY revenue DESC;
+
+-- Top 5 Highest Selling Products
+
+use demo;
+SELECT Category, SUM(Qty) AS total_quantity
+FROM sales
+WHERE Status LIKE 'Shipped%'
+GROUP BY Category
+ORDER BY total_quantity DESC
+LIMIT 5;
+ 
+-- Average Revenue per Order
+
+use demo;
+SELECT AVG(Amount) AS avg_order_value
+FROM sales
+WHERE Status LIKE 'Shipped%';
+
+-- Orders Count by Status
+
+use demo;
+SELECT Status, COUNT(*) AS order_count
+FROM sales
+GROUP BY Status;
+
+-- Fulfilment with Maximum Purchases (if you have Fulfilment  column)
+
+use demo;
+SELECT Fulfilment, SUM(Amount) AS total_spent
+FROM sales
+WHERE Status LIKE 'Shipped%'
+GROUP BY Fulfilment
+ORDER BY total_spent DESC
+LIMIT 1;
+
+-- Monthly Revenue Trend
+
+use demo;
+SELECT DATE_FORMAT(Date, '%Y-%m') AS month, SUM(Amount) AS revenue
+FROM sales
+WHERE Status LIKE 'Shipped%'
+GROUP BY month
+ORDER BY month;
+
+--Create a Second Table
+
+use demo;
+CREATE TABLE product_details (
+    Category VARCHAR(50),
+    Category_Description VARCHAR(255),
+    Discount_Percent DECIMAL(5,2)
+);
+
+INSERT INTO product_details VALUES
+('Electronics', 'Electronic gadgets & accessories', 10.00),
+('Books', 'All types of books and study materials', 5.00),
+('Clothing', 'Men and Women clothing', 15.00),
+('Home', 'Home decor and kitchen appliances', 8.00);
+
+ -- INNER JOIN
+--Show all orders and their discount info (even if no matching category in product_details).
+
+ use demo;
+SELECT s.`Order ID`, s.Category, p.Category_Description, s.Amount
+FROM sales s
+INNER JOIN product_details p
+    ON s.Category = p.Category
+WHERE s.Status LIKE 'Shipped%';
+
+-- LEFT JOIN
+Show all categories from product_details even if no orders were placed.
+
+use demo;
+SELECT s.`Order ID`, s.Category, p.Discount_Percent, s.Amount
+FROM sales s
+LEFT JOIN product_details p
+    ON s.Category = p.Category;
+
+--  RIGHT JOIN
+-- Show all categories from product_details even if no orders were placed.
+
+use demo;
+SELECT s.`Order ID`, s.Category, p.Category_Description
+FROM sales s
+RIGHT JOIN product_details p
+    ON s.Category = p.Category;
+
